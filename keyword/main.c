@@ -3,9 +3,14 @@
 
 #define MAX_LEN 256
 
+static char buf[MAX_LEN] = {0};
+static int idx = 0;
 void put(const char *s){
-	if(s && s[0] != '\0')
+	if(s && s[0] != '\0'){
 		printf("%s\n", s);
+		memset(buf, 0, sizeof(buf));
+		idx = 0;
+	}
 }
 
 int startComment(const char c){
@@ -57,47 +62,38 @@ int endComment(const char c, int type){
 }
 
 void process(const char *s){
-	char buf[MAX_LEN] = {0};
-	int idx = 0;
 	int comment = 0;
+	char c = 0;
 
 	if(!s || strlen(s) == 0)
 		return;
 
-	for(; *s; s++){
-		if(comment == 1){//line comment
-			if(1 == endComment(*s, 1)){
-				comment = 0;
-			}
-			continue;
-		} else if(comment == 2){//comment all.
-			if(1 == endComment(*s, 2)){
-				comment = 0;
-			}
-			continue;
-		}
-		comment = startComment(*s);
-		if(1 == comment || 2 == comment){
+	while(c=*s++){
+		if(comment == 0)
+			comment = startComment(c);
+		if(comment == 1 || comment == 2){
 			put(buf);
-			memset(buf, 0, sizeof(buf));
-			idx = 0;
+			do{
+				c=*s++;
+				if(!c){
+					put(buf);
+					return;
+				}
+			}while(0 == endComment(c, comment));
+			comment = 0;
 			continue;
 		}
-
-		if((*s>='a' && *s<='z') || *s == '_' || (*s>='0' && *s <= '9')){
-			buf[idx++] = *s;
+		
+		if((c>='a' && c<='z') || c == '_' || (c>='0' && c <= '9')){
+			buf[idx++] = c;
 			continue;
 		}
 		put(buf);
-		idx = 0;
-		memset(buf, 0, sizeof(buf));
 	}
 	put(buf);
-	idx = 0;
-	memset(buf, 0, sizeof(buf));
 }
 
 int main(int argc, char *argv[]) {
-	const char *s = "hello /*workd*/ mytest\ntest//mytest\ntest2";
+	const char *s = "hello /*workd*/ mytest\ntest//mytest1\ntest2";
 	process(s);
 }
