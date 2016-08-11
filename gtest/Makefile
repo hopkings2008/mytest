@@ -2,13 +2,13 @@
 
 TARGET=test
 
-SOURCES=$(wildcard *.c)
+SOURCES=$(wildcard *.cc)
 
 HEADERS=$(wildcard *.h)
 
 OBJS=$(patsubst %.c,%.o,$(SOURCES))
 
-LIBS=-lc
+LIBS=-lstdc++ -lc
 
 all: $(TARGET)
 	@echo "build successfully. $(TARGET) has been generated."
@@ -17,8 +17,8 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	gcc -g -O0 -o $(TARGET) $(OBJS) $(LIBS)
 
-%.o:%.c
-	gcc -c -Wint-to-pointer-cast -std=c99 -o $@ $<
+%.o:%.cc
+	gcc -c -Wint-to-pointer-cast -o $@ $<
 
 
 clean:
