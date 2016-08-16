@@ -6,7 +6,7 @@ SOURCES=$(wildcard *.cc)
 
 HEADERS=$(wildcard *.h)
 
-CXXFLAGS=-I/home/zouyu/include
+CXXFLAGS=-Wall -Werror -I/home/zouyu/include
 
 GTEST_LIBS=/home/zouyu/lib
 
@@ -19,10 +19,10 @@ all: $(TARGET)
 
 
 $(TARGET): $(OBJS)
-	gcc -g -O0 -o $(TARGET) -L$(GTEST_LIBS) $(OBJS) $(LIBS)
+	gcc -o $(TARGET) -L$(GTEST_LIBS) $(OBJS) $(LIBS)
 
 %.o:%.cc
-	gcc -c -Wint-to-pointer-cast $(CXXFLAGS) -o $@ $<
+	gcc -g -O0 -c -Wint-to-pointer-cast $(CXXFLAGS) -o $@ $<
 
 
 clean:
