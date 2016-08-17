@@ -22,5 +22,5 @@ TEST_F(LcsTest, TestBasic) {
 
 	int max = m_lcs.findLcs(v1, v2);
 	std::cout<<"got lcs number: "<<max<<std::endl;
-	//ASSERT_EQ(4, max);
+	ASSERT_EQ(4, max);
 }
