@@ -106,6 +106,7 @@ return 1;
 	out.resize(len);
 	printf("plainText: %s, len: %ld\n", out.c_str(), plainTextLen);
 	apr_crypto_block_cleanup(block);
+	apr_pool_destroy(pool);
 	apr_terminate();
 	return 0;
 }
