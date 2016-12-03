@@ -13,7 +13,7 @@ GTEST_LIBS=-L/home/sq/lib -L/home/zouyu/lib
 OBJS=$(patsubst %.cc,%.o,$(SOURCES))
 
 #LIBS=-Wl,-rpath,/home/sq/lib -Wl,-Bstatic -lgtest -lgmock -Wl,-Bdynamic -laprutil-1 -lapr-1 -lcrypt -lstdc++ -lpthread -ldl
-LIBS=-Wl,-rpath,/home/sq/lib -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lstdc++ -lpthread -ldl
+LIBS=-Wl,-rpath,/home/sq/lib -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc -lstdc++ -lpthread -ldl
 
 all: $(TARGET)
 	@echo "build successfully. $(TARGET) has been generated."

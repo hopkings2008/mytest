@@ -1,122 +1,108 @@
+
 #include <stdlib.h>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
+//#include <opencv2/highgui.hpp>
+//#include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
 
-using namespace cv;
-
-std::string type2str(int type);
+void convert(const cv::Mat &matResize, cv::Mat &dst);
+int getChannelNum(const cv::Mat &mat);
 
 int main(int argc, char *argv[]){
-    int ret = 0;
-    cv::Mat dst;
-    //cv::Mat img = cv::imread("/home/zouyu/hopkings/pics/check.png", IMREAD_UNCHANGED );
-    std::ifstream file("/home/zouyu/hopkings/pics/check.png", std::ios::in| std::ios::binary);
+    double w = 140;
+    double h = 140;
+    std::ifstream file("/home/zouyu/hopkings/pics/check.png", std::ios::binary);
     file.seekg(0, file.end);
-    int len = file.tellg();
+    int data_size = file.tellg();
     file.seekg(0, file.beg);
-    printf("len of file: %d\n", len);
-    char * buf = new char[len];
-    memset(buf, 0, len);
-    file.read(buf, len);
-    cv::Mat rawData = cv::Mat(1, len, CV_8UC1, (void *)buf);
+    printf("data_size: %d\n", data_size);
+    unsigned char *data = new unsigned char[data_size];
+    file.read((char *)data, data_size);
+    file.close();
+
+    std::vector<unsigned char> out;
+    cv::Mat matResize;
+    cv::Mat rawData = cv::Mat(1, data_size, CV_8UC1, (void *)data);
     cv::Mat img = cv::imdecode(rawData, cv::IMREAD_UNCHANGED);
     if (img.empty()){
-        printf("failed to load image.\n");
+        printf("faied to imdecode\n");
         return -1;
     }
-    std::string type = type2str(img.type());
-    printf("type: %s, %d*%d\n", type.c_str(), img.cols, img.rows);
-    cv::Size ori = img.size();
-    printf("ori: %d, %d\n", ori.width, ori.height);
-    //dest.width = ori.width/2;
-    //dest.height = ori.height/2;
-    double ratew = ori.width/428.00;
-    double rateh = ori.height/510.00;
-    double rate = ratew > rateh ? ratew : rateh;
+    cv::Size oriSize = img.size();
+    int channelNum = getChannelNum(img);
+    double wRate = double(oriSize.width)/w;
+    double hRate = double(oriSize.height)/h;
+    double rate = wRate > hRate ? wRate : hRate;
     rate = 1.0/rate;
-    printf("rate: %f\n", rate);
-    resize(img, dst, cv::Size(), rate, rate, cv::INTER_AREA);
-    std::vector<int> compression_params;
-    //compression_params.push_back(IMWRITE_PNG_COMPRESSION);
-    //compression_params.push_back(9);
-    compression_params.push_back(IMWRITE_JPEG_QUALITY);
-    compression_params.push_back(95);
-    printf("dst rows: %d, cols: %d\n", dst.rows, dst.cols);
-    //cv::imwrite("dstori.png", dst, compression_params);
-    cv::Mat out = cv::Mat(dst.rows, dst.cols, CV_8UC3);
-    int cols = 0;
-    for (int i=0; i<dst.rows; i++){
-        for (int j=0; j<dst.cols; j++){
-            //out.at<Vec4b>(i, j)[3] = 0;
-            out.at<Vec3b>(i, j)[2] = 255;
-            out.at<Vec3b>(i, j)[1] = 255;
-            out.at<Vec3b>(i, j)[0] = 255;
+    // only resize the image if it is larger than the specified area.
+    if (rate < 1.0){
+        cv::resize(img, matResize, cv::Size(), rate, rate, cv::INTER_AREA);
+        if (matResize.empty()){
+            printf("failed to resize.\n");
+            return -1;
         }
-    }
-    for (int i=0; i<dst.rows; i++){
-        for(int j=0; j<dst.cols; j++){
-            /*if(dst.at<Vec4b>(i, j)[3] == 0){
-                out.at<Vec3b>(i, j)[2] = 255;
-                out.at<Vec3b>(i, j)[1] = 255;
-                out.at<Vec3b>(i, j)[0] = 255;
-                continue;
-            }*/
-            if (dst.at<Vec4b>(i, j)[3] == 0){
-                continue;
-            }
-            out.at<Vec3b>(i, j)[2] = dst.at<Vec4b>(i,j)[2];
-            out.at<Vec3b>(i, j)[1] = dst.at<Vec4b>(i,j)[1];
-            out.at<Vec3b>(i, j)[0] = dst.at<Vec4b>(i,j)[0];
-        }
-    }
-    cv::imwrite("./out1.jpg", out, compression_params);
-    /*for (int i=0; i<dst.rows; i++){
-        for(int j=0; j<dst.cols; j++){
-            if(dst.at<Vec4b>(i, j)[3] ==0){
-                if(cols < j){
-                    cols = j;
-                }
-                dst.at<Vec3b>(i, j)[2] = 255;
-                dst.at<Vec3b>(i, j)[1] = 255;
-                dst.at<Vec3b>(i, j)[0] = 255;
-            }
-        }
-    }*/
-    printf("cols: %d\n", cols);
-    //cv::imwrite("dst.jpg", dst, compression_params);
-    //std::vector<unsigned char> out;
-    //cv::encode(".png", dst, out, compression_params);
+        std::vector<int> compression_params;
+        compression_params.push_back(cv::IMWRITE_JPEG_QUALITY);
+        compression_params.push_back(95);
+        if (channelNum == 4){
+            cv::Mat dst = cv::Mat(matResize.rows, matResize.cols, CV_8UC3);
+            convert(matResize, dst);
 
-    /*cv::namedWindow( "Example1", cv::WINDOW_AUTOSIZE );
-      cv::imshow( "Example1", img );
-      cv::waitKey( 0 );
-      cv::destroyWindow( "Example1" );*/
-    return ret;
+            /*for(int i=0; i<matResize.rows; i++){
+              for(int j=0; j<matResize.cols; j++){
+              dst.at<cv::Vec3b>(i, j)[2] = 255;
+              dst.at<cv::Vec3b>(i, j)[1] = 255;
+              dst.at<cv::Vec3b>(i, j)[0] = 255;
+              }
+              }
+              for(int i=0; i<matResize.rows; i++){
+              for(int j=0; j<matResize.cols; j++){
+              if (matResize.at<cv::Vec4b>(i, j)[3] == 0){
+              continue;
+              }
+              dst.at<cv::Vec3b>(i, j)[2] = matResize.at<cv::Vec4b>(i, j)[2];
+              dst.at<cv::Vec3b>(i, j)[1] = matResize.at<cv::Vec4b>(i, j)[1];
+              dst.at<cv::Vec3b>(i, j)[0] = matResize.at<cv::Vec4b>(i, j)[0];
+              }
+              }*/
+            printf("rows %d, cols %d\n", dst.rows, dst.cols);
+            cv::imwrite("/home/zouyu/hopkings/mytest/opencv/s.jpg", dst, compression_params);
+            if (!cv::imencode(".jpg", dst, out, compression_params)){
+                printf("failed to encode.\n");
+            }
+            printf("out size: %ld\n", out.size());
+            std::ofstream outfile("/home/zouyu/hopkings/mytest/opencv/t.jpg", std::ios::out | std::ios::binary);
+            outfile.write((char *)out.data(), out.size());
+            outfile.close();
+
+        }
+    }
 }
 
-std::string type2str(int type) {
-    std::string r;
-
-    uchar depth = type & CV_MAT_DEPTH_MASK;
-    uchar chans = 1 + (type >> CV_CN_SHIFT);
-
-    switch ( depth ) {
-        case CV_8U:  r = "8U"; break;
-        case CV_8S:  r = "8S"; break;
-        case CV_16U: r = "16U"; break;
-        case CV_16S: r = "16S"; break;
-        case CV_32S: r = "32S"; break;
-        case CV_32F: r = "32F"; break;
-        case CV_64F: r = "64F"; break;
-        default:     r = "User"; break;
+void convert(const cv::Mat &matResize, cv::Mat &dst){
+    for (int i=0; i<matResize.rows; i++){
+        for(int j=0; j<matResize.cols; j++){
+            dst.at<cv::Vec3b>(i, j)[2] = 255;
+            dst.at<cv::Vec3b>(i, j)[1] = 255;
+            dst.at<cv::Vec3b>(i, j)[0] = 255;
+        }
     }
+    for(int i=0; i<matResize.rows; i++){
+        for(int j=0; j<matResize.cols; j++){
+            if (matResize.at<cv::Vec4b>(i, j)[3] == 0){
+                continue;
+            }
+            dst.at<cv::Vec3b>(i, j)[2] = matResize.at<cv::Vec4b>(i, j)[2];
+            dst.at<cv::Vec3b>(i, j)[1] = matResize.at<cv::Vec4b>(i, j)[1];
+            dst.at<cv::Vec3b>(i, j)[0] = matResize.at<cv::Vec4b>(i, j)[0];
+        }
+    }
+}
 
-    r += "C";
-    r += (chans+'0');
-
-    return r;
+int getChannelNum(const cv::Mat &mat){
+    int type = mat.type();
+    return 1 + (type >> CV_CN_SHIFT);
 }
