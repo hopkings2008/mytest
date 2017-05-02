@@ -6,7 +6,7 @@ SOURCES=$(wildcard *.cc)
 
 HEADERS=$(wildcard *.h)
 
-CXXFLAGS=-Wall -Werror -I/home/zouyu/include -I/home/sq/include -std=c++11
+CXXFLAGS=-Wall -Werror -I. -I/home/zouyu/include -I/home/sq/include -std=c++11
 
 GTEST_LIBS=-L/home/sq/lib -L/home/sq/lib64 -L/home/zouyu/lib
 

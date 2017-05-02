@@ -194,28 +194,30 @@ int tailor(const unsigned char *data, size_t data_size, std::vector<unsigned cha
         int edge = h > w ? w : h;
         int x = (w - edge) / 2;
         int y = (h - edge) / 2;
-        cv::Mat dst = cv::Mat(edge, edge, flag);
-        for (int i = y; i < edge; i++){
-            for (int j = x; j < edge; j++){
+        cv::Rect rect(x, y, edge, edge);
+        cv::Mat dst = img(rect);
+        /*cv::Mat dst = cv::Mat(edge, edge, flag);
+        for (int i = 0; i < edge; i++){
+            for (int j = 0; j < edge; j++){
                 switch(flag){
                     case CV_8UC4:
                         {
-                            dst.at<cv::Vec4b>(i-y, j-x)[3] = img.at<cv::Vec4b>(i, j)[3];
-                            dst.at<cv::Vec4b>(i-y, j-x)[2] = img.at<cv::Vec4b>(i, j)[2];
-                            dst.at<cv::Vec4b>(i-y, j-x)[1] = img.at<cv::Vec4b>(i, j)[1];
-                            dst.at<cv::Vec4b>(i-y, j-x)[0] = img.at<cv::Vec4b>(i, j)[0];
+                            dst.at<cv::Vec4b>(i, j)[3] = img.at<cv::Vec4b>(i+y, j+x)[3];
+                            dst.at<cv::Vec4b>(i, j)[2] = img.at<cv::Vec4b>(i+y, j+x)[2];
+                            dst.at<cv::Vec4b>(i, j)[1] = img.at<cv::Vec4b>(i+y, j+x)[1];
+                            dst.at<cv::Vec4b>(i, j)[0] = img.at<cv::Vec4b>(i+y, j+x)[0];
                             break;
                         }
                     default:
                         {
-                            dst.at<cv::Vec3b>(i-y, j-x)[2] = img.at<cv::Vec3b>(i, j)[2];
-                            dst.at<cv::Vec3b>(i-y, j-x)[1] = img.at<cv::Vec3b>(i, j)[1];
-                            dst.at<cv::Vec3b>(i-y, j-x)[0] = img.at<cv::Vec3b>(i, j)[0];
+                            dst.at<cv::Vec3b>(i, j)[2] = img.at<cv::Vec3b>(i+y, j+x)[2];
+                            dst.at<cv::Vec3b>(i, j)[1] = img.at<cv::Vec3b>(i+y, j+x)[1];
+                            dst.at<cv::Vec3b>(i, j)[0] = img.at<cv::Vec3b>(i+y, j+x)[0];
                             break;
                         }
                 }
             }
-        }
+        }*/
 
         std::vector<int> compression_params;
         std::string suffix = ".jpg";
