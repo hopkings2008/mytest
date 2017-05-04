@@ -10,7 +10,7 @@
 #include <iostream>
 #include <sys/time.h>
 
-#define FACE_DOWNSAMPLE_RATIO 1
+#define FACE_DOWNSAMPLE_RATIO 1.5
 
 using namespace dlib;
 using namespace std;
@@ -42,11 +42,15 @@ int main(int argc, char** argv)
             cout << "processing image " << argv[i] << endl;
             cv::Mat cvimg = cv::imread(argv[i], 1);
             cv::Mat ims;
-            cv::resize(cvimg, ims, cv::Size(), 1.0/FACE_DOWNSAMPLE_RATIO, 1.0/FACE_DOWNSAMPLE_RATIO);
+            cv::Mat grayImg;
             int w = cvimg.cols;
             int h = cvimg.rows;
+            float raio = w/320 > h/180 ? h/180 : w/320;
+            //cv::resize(cvimg, ims, cv::Size(), 1.0/raio, 1.0/raio);
+            cv::cvtColor(cvimg, grayImg, cv::COLOR_BGR2GRAY);
+            printf("origin w: %d, h: %d\n", w, h);
             int edge = w > h ? h : w;
-            dlib::cv_image<rgb_pixel> img(ims);
+            dlib::cv_image<unsigned char> img(grayImg);
             //array2d<unsigned char> img;
             //load_image(img, argv[i]);
             // Make the image bigger by a factor of two.  This is useful since
@@ -72,10 +76,10 @@ int main(int argc, char** argv)
             if (dets.empty()){
                 return 0;
             }
-            int l = dets[0].left() * FACE_DOWNSAMPLE_RATIO;
-            int t = dets[0].top() * FACE_DOWNSAMPLE_RATIO;
-            int r = dets[0].right()* FACE_DOWNSAMPLE_RATIO;
-            int b = dets[0].bottom() * FACE_DOWNSAMPLE_RATIO;
+            int l = dets[0].left() * raio;
+            int t = dets[0].top() * raio;
+            int r = dets[0].right()* raio;
+            int b = dets[0].bottom() * raio;
             int x = (l + r)/2;
             int y = (t + b)/2;
             int xx = 0;
