@@ -45,7 +45,8 @@ int main(int argc, char** argv)
             cv::Mat grayImg;
             int w = cvimg.cols;
             int h = cvimg.rows;
-            float raio = w/320 > h/180 ? h/180 : w/320;
+            //float raio = w/320 > h/180 ? h/180 : w/320;
+            float raio = 1.0;
             //cv::resize(cvimg, ims, cv::Size(), 1.0/raio, 1.0/raio);
             cv::cvtColor(cvimg, grayImg, cv::COLOR_BGR2GRAY);
             printf("origin w: %d, h: %d\n", w, h);
