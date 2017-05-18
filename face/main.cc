@@ -19,6 +19,12 @@ using namespace std;
 
 int main(int argc, char** argv)
 {  
+
+    std::vector<int> compression_params;
+    std::string suffix = ".png";
+    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    compression_params.push_back(3);
+
     try
     {
         if (argc == 1)
@@ -50,6 +56,7 @@ int main(int argc, char** argv)
             //cv::resize(cvimg, ims, cv::Size(), 1.0/raio, 1.0/raio);
             cv::cvtColor(cvimg, grayImg, cv::COLOR_BGR2GRAY);
             printf("origin w: %d, h: %d\n", w, h);
+            cv::imwrite("./imgs/gray.png", grayImg, compression_params);
             int edge = w > h ? h : w;
             dlib::cv_image<unsigned char> img(grayImg);
             //array2d<unsigned char> img;
@@ -101,20 +108,16 @@ int main(int argc, char** argv)
             }
             cv::Rect rect(xx, yy, edge, edge);
             cv::Mat dst = cvimg(rect);
-            std::vector<int> compression_params;
-            std::string suffix = ".png";
-            compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
-            compression_params.push_back(3);
             cv::imwrite("./imgs/dst2.png", dst, compression_params);
             return 0;
             // Now we show the image on the screen and the face detections as
             // red overlay boxes.
             /*win.clear_overlay();
-            win.set_image(img);
-            win.add_overlay(dets, rgb_pixel(255,0,0));
+              win.set_image(img);
+              win.add_overlay(dets, rgb_pixel(255,0,0));
 
-            cout << "Hit enter to process the next image..." << endl;
-            cin.get();*/
+              cout << "Hit enter to process the next image..." << endl;
+              cin.get();*/
         }
     }
     catch (exception& e)
