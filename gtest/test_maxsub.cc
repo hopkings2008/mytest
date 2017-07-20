@@ -28,7 +28,8 @@ TEST_F(MaxSubTest, TestBasic) {
 }
 
 TEST_F(MaxSubTest, TestSmall1) {
-	int a[] = {1,2, -5, -6, 3, 4};
+	//int a[] = {1,2, -5, -6, 3, 4};
+    int a[] = {-2,1,-3,4,-1,2,1,-5,4};
 	//int b[] = {4,1,1,2,3,3};
 
     std::vector<int> array;
@@ -37,9 +38,9 @@ TEST_F(MaxSubTest, TestSmall1) {
 	int max = m_maxSub.find(array, result);
     const Record & rc = result.back();
 	printf("start: %d, end: %d, max: %d\n", rc.start, rc.end, rc.max);
-	ASSERT_EQ(7, max);
     size_t num = result.size();
     for (size_t i=0; i<num; i++){
         printf("idx: %d, start: %d, end: %d, max: %d\n", (int)i, result[i].start, result[i].end, result[i].max);
     }
+    ASSERT_EQ(6, max);
 }
