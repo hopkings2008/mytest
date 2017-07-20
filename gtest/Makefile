@@ -6,9 +6,9 @@ SOURCES=$(wildcard *.cc)
 
 HEADERS=$(wildcard *.h)
 
-CXXFLAGS=-Wall -Werror -I/home/zouyu/include
+CXXFLAGS=-Wall -Werror -I/home/sq/include
 
-GTEST_LIBS=/home/zouyu/lib
+GTEST_LIBS=/home/sq/lib
 
 OBJS=$(patsubst %.cc,%.o,$(SOURCES))
 
