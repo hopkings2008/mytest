@@ -36,6 +36,7 @@ int MaxSub::find(const std::vector<int> &array, std::vector<Record> &result){
     for (size_t j=1; j<num; j++){
         const Record &former = result[j-1];
         Record rc;
+        rc.max = former.max-1;
         rc.end = j;
         int sum = 0;
         // compare sum & former.max. rc.max is the sum if sum >= former.max.
@@ -60,4 +61,37 @@ int MaxSub::find(const std::vector<int> &array, std::vector<Record> &result){
         result.push_back(rc);
     }
     return result.back().max;
+}
+
+int MaxSub::maxSubArray(std::vector<int>& nums) {
+    std::vector<int> sums;
+    int end = 0;
+    size_t num = nums.size();
+    for (size_t i=0; i<num; i++){
+        if (0 == i){
+            sums.push_back(nums[i]);
+            continue;
+        }
+        int tempEnd = i;
+        int former = sums[i-1];
+        int max = former-1;
+        int sum = 0;
+        for (int j=i; j>end; j--){
+            sum += nums[j];
+            if (sum >= former && sum > max){
+                max = sum;
+                continue;
+            }
+        }
+        if (sum + former >= former && sum + former > max){
+            max = sum+former;
+        }
+        if (max < former){
+            max = former;
+            tempEnd = end;
+        }
+        end = tempEnd;
+        sums.push_back(max);
+    }
+    return sums.back();        
 }

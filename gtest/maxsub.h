@@ -19,4 +19,5 @@ class MaxSub{
 
     public:
         int find(const std::vector<int> &array, std::vector<Record> &result);
+        int maxSubArray(std::vector<int> &nums);
 };

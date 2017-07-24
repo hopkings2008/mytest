@@ -6,7 +6,9 @@ SOURCES=$(wildcard *.cc)
 
 HEADERS=$(wildcard *.h)
 
-CXXFLAGS=-Wall -Werror -I/home/sq/include
+CFLAGS=-g -O0 -c -Wint-to-pointer-cast -std=gnu++11
+
+CXXFLAGS=-Wall -Werror -I/home/sq/include -I./
 
 GTEST_LIBS=/home/sq/lib
 
@@ -22,7 +24,7 @@ $(TARGET): $(OBJS)
 	gcc -o $(TARGET) -L$(GTEST_LIBS) $(OBJS) $(LIBS)
 
 %.o:%.cc
-	gcc -g -O0 -c -Wint-to-pointer-cast $(CXXFLAGS) -o $@ $<
+	gcc $(CFLAGS) $(CXXFLAGS) -o $@ $<
 
 
 clean:

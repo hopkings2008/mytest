@@ -1,5 +1,5 @@
-#ifndef TEST_WORK_H
-#define TEST_WORK_H
+#pragma once
+
 
 #include "work.h"
 #include <gtest/gtest.h>
@@ -14,4 +14,3 @@ class WorkTest: public ::testing::Test {
 		Work m_work;
 };
 
-#endif
