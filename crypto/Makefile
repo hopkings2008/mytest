@@ -13,7 +13,7 @@ GTEST_LIBS=-L/home/sq/lib -L/home/zouyu/lib
 OBJS=$(patsubst %.cc,%.o,$(SOURCES))
 
 #LIBS=-Wl,-rpath,/home/sq/lib -Wl,-Bstatic -lgtest -lgmock -Wl,-Bdynamic -laprutil-1 -lapr-1 -lcrypt -lstdc++ -lpthread -ldl
-LIBS=-laprutil-1 -lapr-1 -lcrypt -lstdc++ -lpthread -ldl
+LIBS=-laprutil-1 -lapr-1 -lcrypt -lstdc++ -lpthread -lcrypto -ldl
 
 all: $(TARGET)
 	@echo "build successfully. $(TARGET) has been generated."
