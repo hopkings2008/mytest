@@ -1,14 +1,18 @@
 .PHONY: all clean
 
+BASE=..
+
+UTIL=$(BASE)/util
+
 TARGET=test
 
-SOURCES=$(wildcard *.cc)
+SOURCES=$(wildcard *.cc) $(wildcard $(UTIL)/*.cc)
 
 HEADERS=$(wildcard *.h)
 
 CFLAGS=-g -O0 -c -Wint-to-pointer-cast -std=gnu++11
 
-CXXFLAGS=-Wall -Werror -I/home/sq/include -I./
+CXXFLAGS=-Wall -Werror -I/home/sq/include -I$(UTIL) -I./
 
 LDFLAGS=-Wl,-rpath,/home/sq/lib -Wl,-rpath,/home/sq/lib64
 
