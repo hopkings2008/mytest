@@ -6,9 +6,9 @@
 
 int main() {
 
-    const char key[] = "012345678";
+    const char key[] = "$shiQI!1234";
 
-    char data[] = "hello world";
+    char data[] = "13";
 
 
     unsigned char* result;
@@ -25,16 +25,18 @@ int main() {
     HMAC_Final(&ctx, result, &len);
     HMAC_CTX_cleanup(&ctx);
 
-    printf("HMAC digest: ");
+    printf("HMAC digest %d: \n", len);
 
-    std::stringstream ss;
-    for (unsigned int i = 0; i != len; i++){
+    std::string ss;
+    for (unsigned int i = 0; i < len; i++){
+        char by[4] = {0};
         printf("%02x", (unsigned int)result[i]);
-        ss << result[i];
+        snprintf(by, 4, "%02x", (unsigned int)result[i]);
+        ss += by;
     }
 
     printf("\n");
-    printf("ss: %s\n", ss.str().c_str());
+    printf("ss: %s\n", ss.c_str());
 
     free(result);
 

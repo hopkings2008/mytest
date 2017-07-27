@@ -14,6 +14,14 @@ class ImageAverage{
         util::Error average(cv::Mat &out);
 
         int chanNum() const;
+        int colNum() const;
+        int rowNum() const;
+
+        // name: doesn't have suffix.
+        util::Error save(const std::string &path, const std::string &name);
+
+    protected:
+        std::string pathJoin(const std::string &p1, const std::string &p2);
 
     protected:
         cv::Mat m_ori; 
