@@ -31,6 +31,25 @@ int ImageAverage::rowNum() const {
     return m_ori.rows;
 }
 
+int ImageAverage::depth() const {
+    int s = m_ori.depth();
+    switch (s){
+        case CV_8U:
+            {
+                return (1<<8)-1;
+            }
+        case CV_16U:
+            {
+                return (1<<16)-1;
+            }
+        default:
+            {
+                break;
+            }
+    }
+    return 0;
+}
+
 void ImageAverage::setRange(int range){
     m_range = range;
 }
@@ -44,7 +63,7 @@ std::string ImageAverage::pathJoin(const std::string &p1, const std::string &p2)
     return full;
 }
 
-util::Error ImageAverage::save(const std::string &path, const std::string &name){
+util::Error ImageAverage::save(const cv::Mat &img, const std::string &path, const std::string &name){
     util::Error err;
     int chans = chanNum();
     std::string suffix = ".jpeg";
@@ -67,7 +86,7 @@ util::Error ImageAverage::save(const std::string &path, const std::string &name)
     }
     std::string full = pathJoin(path, name);
     full += suffix;
-    if (!imwrite(full.c_str(), m_ori, params)){
+    if (!imwrite(full.c_str(), img, params)){
         err.setCode(-1);
         err.errorf("failed to save image to %s", full.c_str());
         return err;
@@ -77,43 +96,77 @@ util::Error ImageAverage::save(const std::string &path, const std::string &name)
 
 util::Error ImageAverage::average(cv::Mat &out){
     util::Error err;
-    int m_range = 2;
     int chans = chanNum();
+    int minus = (m_range-1)/2;
     for (int i = 0; i<m_ori.rows; i++){
         for (int j = 0; j<m_ori.cols; j++){
+            int total = 0;
             if (4 == chans){
                 cv::Vec4b v;
-                for (int k = i-1; k<m_range; k++){
-                    for (int l = j-1; l<m_range; l++){
-                        if (k < 0 || l < 0 || k >= m_ori.rows || l >= m_ori.cols || (k == i && l == j)){
+                int k = 0;
+                int l = 0;
+                for (int m = 0; m<m_range; m++){
+                    for (int n = 0; n<m_range; n++){
+                        k = i - minus + m;
+                        l = j-minus + n;
+                        if (k < 0 || l < 0 || k >= m_ori.rows || l >= m_ori.cols){
                             continue;
                         }
                         v[0] += m_ori.at<cv::Vec4b>(k,l)[0];
                         v[1] += m_ori.at<cv::Vec4b>(k,l)[1];
                         v[2] += m_ori.at<cv::Vec4b>(k,l)[2];
+                        total++;
                     }
                 }
-                out.at<cv::Vec4b>(i,j)[0] = v[0]/8;
-                out.at<cv::Vec4b>(i,j)[1] = v[1]/8;
-                out.at<cv::Vec4b>(i,j)[2] = v[2]/8;
+                
+                out.at<cv::Vec4b>(i,j)[0] = v[0]/total;
+                out.at<cv::Vec4b>(i,j)[1] = v[1]/total;
+                out.at<cv::Vec4b>(i,j)[2] = v[2]/total;
                 out.at<cv::Vec4b>(i,j)[3] = m_ori.at<cv::Vec4b>(i,j)[3];
                 continue;
             }
 
             cv::Vec3b v;
-            for (int k = i-1; k<m_range; k++){
-                for (int l = j-1; l<m_range; l++){
-                    if (k < 0 || l < 0 || k >= m_ori.rows || l >= m_ori.cols || (k == i && l == j)){
+            int k = 0;
+            int l = 0;
+            for (int m = 0; m<m_range; m++){
+                for (int n = 0; n<m_range; n++){
+                    k = i-minus + m;
+                    l = j-minus + n;
+                    if (k < 0 || l < 0 || k >= m_ori.rows || l >= m_ori.cols){
                         continue;
                     }
                     v[0] += m_ori.at<cv::Vec3b>(k,l)[0];
                     v[1] += m_ori.at<cv::Vec3b>(k,l)[1];
                     v[2] += m_ori.at<cv::Vec3b>(k,l)[2];
+                    total++;
                 }
             }
-            out.at<cv::Vec3b>(i,j)[0] = v[0]/8;
-            out.at<cv::Vec3b>(i,j)[1] = v[1]/8;
-            out.at<cv::Vec3b>(i,j)[2] = v[2]/8;
+            out.at<cv::Vec3b>(i,j)[0] = v[0]/total;
+            out.at<cv::Vec3b>(i,j)[1] = v[1]/total;
+            out.at<cv::Vec3b>(i,j)[2] = v[2]/total;
+        }
+    }
+    return err;
+}
+
+util::Error ImageAverage::inverse(cv::Mat &out){
+    util::Error err;
+    int chans = chanNum();
+    int max = depth();
+
+    for (int i=0; i < m_ori.rows; i++){
+        for (int j=0; j<m_ori.cols; j++){
+            if (4 == chans){
+                out.at<cv::Vec4b>(i,j)[3] = m_ori.at<cv::Vec4b>(i,j)[3];
+                out.at<cv::Vec4b>(i,j)[2] = max - m_ori.at<cv::Vec4b>(i,j)[2];
+                out.at<cv::Vec4b>(i,j)[1] = max - m_ori.at<cv::Vec4b>(i,j)[1];
+                out.at<cv::Vec4b>(i,j)[0] = max - m_ori.at<cv::Vec4b>(i,j)[0];
+                continue;
+            }
+            out.at<cv::Vec3b>(i,j)[2] = max - m_ori.at<cv::Vec3b>(i,j)[2];
+            out.at<cv::Vec3b>(i,j)[1] = max - m_ori.at<cv::Vec3b>(i,j)[1];
+            out.at<cv::Vec3b>(i,j)[0] = max - m_ori.at<cv::Vec3b>(i,j)[0];
         }
     }
     return err;
