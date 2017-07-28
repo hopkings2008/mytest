@@ -1,7 +1,7 @@
 #include <aver.h>
 #include <vector>
 
-ImageAverage::ImageAverage(){
+ImageAverage::ImageAverage():m_range(3){
 }
 
 ImageAverage::~ImageAverage(){
@@ -29,6 +29,10 @@ int ImageAverage::colNum() const {
 
 int ImageAverage::rowNum() const {
     return m_ori.rows;
+}
+
+void ImageAverage::setRange(int range){
+    m_range = range;
 }
 
 std::string ImageAverage::pathJoin(const std::string &p1, const std::string &p2){
@@ -73,14 +77,14 @@ util::Error ImageAverage::save(const std::string &path, const std::string &name)
 
 util::Error ImageAverage::average(cv::Mat &out){
     util::Error err;
-    int range = 2;
+    int m_range = 2;
     int chans = chanNum();
     for (int i = 0; i<m_ori.rows; i++){
         for (int j = 0; j<m_ori.cols; j++){
             if (4 == chans){
                 cv::Vec4b v;
-                for (int k = i-1; k<range; k++){
-                    for (int l = j-1; l<range; l++){
+                for (int k = i-1; k<m_range; k++){
+                    for (int l = j-1; l<m_range; l++){
                         if (k < 0 || l < 0 || k >= m_ori.rows || l >= m_ori.cols || (k == i && l == j)){
                             continue;
                         }
@@ -97,8 +101,8 @@ util::Error ImageAverage::average(cv::Mat &out){
             }
 
             cv::Vec3b v;
-            for (int k = i-1; k<range; k++){
-                for (int l = j-1; l<range; l++){
+            for (int k = i-1; k<m_range; k++){
+                for (int l = j-1; l<m_range; l++){
                     if (k < 0 || l < 0 || k >= m_ori.rows || l >= m_ori.cols || (k == i && l == j)){
                         continue;
                     }

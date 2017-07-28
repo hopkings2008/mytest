@@ -34,4 +34,4 @@ $(TARGET): $(OBJS)
 
 
 clean:
-	-@rm -rf $(OBJS) $(TARGET)
+	-@rm -rf $(OBJS) $(TARGET) imgs/out.*

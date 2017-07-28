@@ -13,6 +13,8 @@ class ImageAverage{
 
         util::Error average(cv::Mat &out);
 
+        void setRange(int range);
+
         int chanNum() const;
         int colNum() const;
         int rowNum() const;
@@ -24,5 +26,6 @@ class ImageAverage{
         std::string pathJoin(const std::string &p1, const std::string &p2);
 
     protected:
-        cv::Mat m_ori; 
+        cv::Mat m_ori;
+        int m_range;
 };

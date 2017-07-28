@@ -17,6 +17,7 @@ void AverTest::TearDown() {
 
 TEST_F(AverTest, TestBasicFunc) {
     std::string file = "./imgs/1.jpg";
+    m_aver.setRange(15);
     util::Error err = m_aver.init(file);
     ASSERT_EQ(err.code(), 0);
     cv::Mat out(m_aver.rowNum(), m_aver.colNum(), CV_8UC3);
