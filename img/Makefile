@@ -20,7 +20,7 @@ GTEST_LIBS=/home/sq/lib
 
 OBJS=$(patsubst %.cc,%.o,$(SOURCES))
 
-LIBS=-Wl,-Bstatic -lgtest -lgmock -Wl,-Bdynamic -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc -lstdc++ -lpthread -lc
+LIBS=-Wl,-Bstatic -lgtest -lgmock -Wl,-Bdynamic -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc -lstdc++ -lpthread -lm -lc
 
 all: $(TARGET)
 	@echo "build successfully. $(TARGET) has been generated."

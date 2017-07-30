@@ -66,7 +66,7 @@ std::string ImageAverage::pathJoin(const std::string &p1, const std::string &p2)
 util::Error ImageAverage::save(const cv::Mat &img, const std::string &path, const std::string &name){
     util::Error err;
     int chans = chanNum();
-    std::string suffix = ".jpeg";
+    std::string suffix = ".jpg";
     std::vector<int> params;
     switch (chans){
         case 4:
@@ -78,7 +78,7 @@ util::Error ImageAverage::save(const cv::Mat &img, const std::string &path, cons
             }
         default:
             {
-                suffix = ".jpeg";
+                suffix = ".jpg";
                 params.push_back(CV_IMWRITE_JPEG_QUALITY);
                 params.push_back(95);
                 break;
@@ -96,6 +96,11 @@ util::Error ImageAverage::save(const cv::Mat &img, const std::string &path, cons
 
 util::Error ImageAverage::average(cv::Mat &out){
     util::Error err;
+    //cv::medianBlur(m_ori, out, 3);
+    //cv::cvSmooth(m_ori, out);
+    //cv::Laplacian(m_ori, out, CV_16S, 3, 1, 0, cv::BORDER_DEFAULT );
+    cv::GaussianBlur(m_ori, out, cv::Size(3,3) ,0 ,0);
+    return err;
     int chans = chanNum();
     int minus = (m_range-1)/2;
     for (int i = 0; i<m_ori.rows; i++){
@@ -142,9 +147,14 @@ util::Error ImageAverage::average(cv::Mat &out){
                     total++;
                 }
             }
-            out.at<cv::Vec3b>(i,j)[0] = v[0]/total;
-            out.at<cv::Vec3b>(i,j)[1] = v[1]/total;
-            out.at<cv::Vec3b>(i,j)[2] = v[2]/total;
+            out.at<cv::Vec3b>(i,j)[0] = static_cast<unsigned char>(round((double)v[0]/(double)total));
+            out.at<cv::Vec3b>(i,j)[1] = m_ori.at<cv::Vec3b>(i,j)[1];
+            //out.at<cv::Vec3b>(i,j)[2] = m_ori.at<cv::Vec3b>(i,j)[2];
+            //out.at<cv::Vec3b>(i,j)[1] = static_cast<unsigned char>(round((double)v[1]/(double)total));
+            out.at<cv::Vec3b>(i,j)[2] = static_cast<unsigned char>(round((double)v[2]/(double)total));
+            /*out.at<cv::Vec3b>(i,j)[0] = m_ori.at<cv::Vec3b>(i,j)[0];
+            out.at<cv::Vec3b>(i,j)[1] = m_ori.at<cv::Vec3b>(i,j)[1];
+            out.at<cv::Vec3b>(i,j)[2] = m_ori.at<cv::Vec3b>(i,j)[2];*/
         }
     }
     return err;
