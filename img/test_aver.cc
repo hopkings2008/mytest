@@ -16,9 +16,10 @@ void AverTest::TearDown() {
 }
 
 TEST_F(AverTest, TestBasicAverageFunc) {
+    util::Error err;
     std::string file = "./imgs/1.jpg";
     m_aver.setRange(3);
-    util::Error err = m_aver.init(file);
+    err = m_aver.init(file);
     ASSERT_EQ(err.code(), 0);
     printf("depth: %d\n", m_aver.depth());
     cv::Mat out(m_aver.rowNum(), m_aver.colNum(), CV_8UC3);

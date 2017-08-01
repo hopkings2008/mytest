@@ -105,11 +105,12 @@ util::Error ImageAverage::average(cv::Mat &out){
     cv::Mat imgy;
     cv::cvtColor(m_ori, imgy, CV_BGR2YCrCb);
     cv::split(imgy,channels);
-    cv::Mat &imgTmp = channels[0];
+    //cv::Mat &imgTmp = channels[0];
+    cv::Mat imgTmp(m_ori.rows, m_ori.cols, CV_8UC3);
     int chans = chanNum();
     int minus = (m_range-1)/2;
-    for (int i = 0; i<imgTmp.rows; i++){
-        for (int j = 0; j<imgTmp.cols; j++){
+    for (int i = 0; i<channels[0].rows; i++){
+        for (int j = 0; j<channels[0].cols; j++){
             int total = 0;
             if (4 == chans){
                 cv::Vec4b v;
@@ -146,13 +147,16 @@ util::Error ImageAverage::average(cv::Mat &out){
                     if (k < 0 || l < 0 || k >= imgTmp.rows || l >= imgTmp.cols){
                         continue;
                     }
-                    v[0] += imgTmp.at<cv::Vec3b>(k,l)[0];
-                    v[1] += imgTmp.at<cv::Vec3b>(k,l)[1];
-                    v[2] += imgTmp.at<cv::Vec3b>(k,l)[2];
+                    v[0] += channels[0].at<cv::Vec3b>(k,l)[0];
+                    v[1] += channels[0].at<cv::Vec3b>(k,l)[1];
+                    v[2] += channels[0].at<cv::Vec3b>(k,l)[2];
                     total++;
                 }
             }
+            //imgTmp.at<cv::Vec3b>(i,j)[0] = channels[0].at<cv::Vec3b>(i,j)[0]-1;
             imgTmp.at<cv::Vec3b>(i,j)[0] = static_cast<unsigned char>(round((double)v[0]/(double)total));
+            imgTmp.at<cv::Vec3b>(i,j)[1] = channels[0].at<cv::Vec3b>(i,j)[1];
+            imgTmp.at<cv::Vec3b>(i,j)[2] = channels[0].at<cv::Vec3b>(i,j)[2];
             //out.at<cv::Vec3b>(i,j)[1] = imgTmp.at<cv::Vec3b>(i,j)[1];
             //out.at<cv::Vec3b>(i,j)[2] = imgTmp.at<cv::Vec3b>(i,j)[2];
             //out.at<cv::Vec3b>(i,j)[1] = static_cast<unsigned char>(round((double)v[1]/(double)total));
@@ -161,6 +165,13 @@ util::Error ImageAverage::average(cv::Mat &out){
             //out.at<cv::Vec3b>(i,j)[1] = imgTmp.at<cv::Vec3b>(i,j)[1];
             //out.at<cv::Vec3b>(i,j)[2] = imgTmp.at<cv::Vec3b>(i,j)[2];
         }
+    }
+    for (int i = 0; i< channels[0].rows; i++){
+            for (int j = 0; j<channels[0].cols; j++){
+                    channels[0].at<cv::Vec3b>(i,j)[0] = imgTmp.at<cv::Vec3b>(i,j)[0];
+                    channels[0].at<cv::Vec3b>(i,j)[1] = imgTmp.at<cv::Vec3b>(i,j)[1];
+                    channels[0].at<cv::Vec3b>(i,j)[2] = imgTmp.at<cv::Vec3b>(i,j)[2];
+            }
     }
     cv::merge(channels, imgy);
     cvtColor(imgy, out, CV_YCrCb2BGR);
