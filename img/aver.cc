@@ -99,12 +99,14 @@ util::Error ImageAverage::average(cv::Mat &out){
     //cv::medianBlur(m_ori, out, 3);
     //cv::cvSmooth(m_ori, out);
     //cv::Laplacian(m_ori, out, CV_16S, 3, 1, 0, cv::BORDER_DEFAULT );
-    cv::GaussianBlur(m_ori, out, cv::Size(3,3) ,0 ,0);
-    return err;
+    //cv::GaussianBlur(m_ori, out, cv::Size(3,3) ,0 ,0);
+    //return err;
+    cv::Mat imgTmp;
+    cv::cvtColor(m_ori, imgTmp, CV_BGR2YCrCb);
     int chans = chanNum();
     int minus = (m_range-1)/2;
-    for (int i = 0; i<m_ori.rows; i++){
-        for (int j = 0; j<m_ori.cols; j++){
+    for (int i = 0; i<imgTmp.rows; i++){
+        for (int j = 0; j<imgTmp.cols; j++){
             int total = 0;
             if (4 == chans){
                 cv::Vec4b v;
@@ -114,12 +116,12 @@ util::Error ImageAverage::average(cv::Mat &out){
                     for (int n = 0; n<m_range; n++){
                         k = i - minus + m;
                         l = j-minus + n;
-                        if (k < 0 || l < 0 || k >= m_ori.rows || l >= m_ori.cols){
+                        if (k < 0 || l < 0 || k >= imgTmp.rows || l >= imgTmp.cols){
                             continue;
                         }
-                        v[0] += m_ori.at<cv::Vec4b>(k,l)[0];
-                        v[1] += m_ori.at<cv::Vec4b>(k,l)[1];
-                        v[2] += m_ori.at<cv::Vec4b>(k,l)[2];
+                        v[0] += imgTmp.at<cv::Vec4b>(k,l)[0];
+                        v[1] += imgTmp.at<cv::Vec4b>(k,l)[1];
+                        v[2] += imgTmp.at<cv::Vec4b>(k,l)[2];
                         total++;
                     }
                 }
@@ -127,7 +129,7 @@ util::Error ImageAverage::average(cv::Mat &out){
                 out.at<cv::Vec4b>(i,j)[0] = v[0]/total;
                 out.at<cv::Vec4b>(i,j)[1] = v[1]/total;
                 out.at<cv::Vec4b>(i,j)[2] = v[2]/total;
-                out.at<cv::Vec4b>(i,j)[3] = m_ori.at<cv::Vec4b>(i,j)[3];
+                out.at<cv::Vec4b>(i,j)[3] = imgTmp.at<cv::Vec4b>(i,j)[3];
                 continue;
             }
 
@@ -138,24 +140,26 @@ util::Error ImageAverage::average(cv::Mat &out){
                 for (int n = 0; n<m_range; n++){
                     k = i-minus + m;
                     l = j-minus + n;
-                    if (k < 0 || l < 0 || k >= m_ori.rows || l >= m_ori.cols){
+                    if (k < 0 || l < 0 || k >= imgTmp.rows || l >= imgTmp.cols){
                         continue;
                     }
-                    v[0] += m_ori.at<cv::Vec3b>(k,l)[0];
-                    v[1] += m_ori.at<cv::Vec3b>(k,l)[1];
-                    v[2] += m_ori.at<cv::Vec3b>(k,l)[2];
+                    v[0] += imgTmp.at<cv::Vec3b>(k,l)[0];
+                    v[1] += imgTmp.at<cv::Vec3b>(k,l)[1];
+                    v[2] += imgTmp.at<cv::Vec3b>(k,l)[2];
                     total++;
                 }
             }
-            out.at<cv::Vec3b>(i,j)[0] = static_cast<unsigned char>(round((double)v[0]/(double)total));
-            out.at<cv::Vec3b>(i,j)[1] = m_ori.at<cv::Vec3b>(i,j)[1];
-            //out.at<cv::Vec3b>(i,j)[2] = m_ori.at<cv::Vec3b>(i,j)[2];
+            imgTmp.at<cv::Vec3b>(i,j)[0] = static_cast<unsigned char>(round((double)v[0]/(double)total));
+            //out.at<cv::Vec3b>(i,j)[1] = imgTmp.at<cv::Vec3b>(i,j)[1];
+            //out.at<cv::Vec3b>(i,j)[2] = imgTmp.at<cv::Vec3b>(i,j)[2];
             //out.at<cv::Vec3b>(i,j)[1] = static_cast<unsigned char>(round((double)v[1]/(double)total));
-            out.at<cv::Vec3b>(i,j)[2] = static_cast<unsigned char>(round((double)v[2]/(double)total));
-            /*out.at<cv::Vec3b>(i,j)[0] = m_ori.at<cv::Vec3b>(i,j)[0];
-            out.at<cv::Vec3b>(i,j)[1] = m_ori.at<cv::Vec3b>(i,j)[1];
-            out.at<cv::Vec3b>(i,j)[2] = m_ori.at<cv::Vec3b>(i,j)[2];*/
+            //out.at<cv::Vec3b>(i,j)[2] = static_cast<unsigned char>(round((double)v[2]/(double)total));
+            /*out.at<cv::Vec3b>(i,j)[0] = imgTmp.at<cv::Vec3b>(i,j)[0];
+            out.at<cv::Vec3b>(i,j)[1] = imgTmp.at<cv::Vec3b>(i,j)[1];
+            out.at<cv::Vec3b>(i,j)[2] = imgTmp.at<cv::Vec3b>(i,j)[2];*/
         }
+
+        cvtColor(imgTmp, out, CV_YCrCb2BGR);
     }
     return err;
 }
