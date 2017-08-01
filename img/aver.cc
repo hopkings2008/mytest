@@ -101,8 +101,11 @@ util::Error ImageAverage::average(cv::Mat &out){
     //cv::Laplacian(m_ori, out, CV_16S, 3, 1, 0, cv::BORDER_DEFAULT );
     //cv::GaussianBlur(m_ori, out, cv::Size(3,3) ,0 ,0);
     //return err;
-    cv::Mat imgTmp;
-    cv::cvtColor(m_ori, imgTmp, CV_BGR2YCrCb);
+    std::vector<cv::Mat> channels;
+    cv::Mat imgy;
+    cv::cvtColor(m_ori, imgy, CV_BGR2YCrCb);
+    cv::split(imgy,channels);
+    cv::Mat &imgTmp = channels[0];
     int chans = chanNum();
     int minus = (m_range-1)/2;
     for (int i = 0; i<imgTmp.rows; i++){
@@ -154,13 +157,13 @@ util::Error ImageAverage::average(cv::Mat &out){
             //out.at<cv::Vec3b>(i,j)[2] = imgTmp.at<cv::Vec3b>(i,j)[2];
             //out.at<cv::Vec3b>(i,j)[1] = static_cast<unsigned char>(round((double)v[1]/(double)total));
             //out.at<cv::Vec3b>(i,j)[2] = static_cast<unsigned char>(round((double)v[2]/(double)total));
-            /*out.at<cv::Vec3b>(i,j)[0] = imgTmp.at<cv::Vec3b>(i,j)[0];
-            out.at<cv::Vec3b>(i,j)[1] = imgTmp.at<cv::Vec3b>(i,j)[1];
-            out.at<cv::Vec3b>(i,j)[2] = imgTmp.at<cv::Vec3b>(i,j)[2];*/
+            //out.at<cv::Vec3b>(i,j)[0] = imgTmp.at<cv::Vec3b>(i,j)[0];
+            //out.at<cv::Vec3b>(i,j)[1] = imgTmp.at<cv::Vec3b>(i,j)[1];
+            //out.at<cv::Vec3b>(i,j)[2] = imgTmp.at<cv::Vec3b>(i,j)[2];
         }
-
-        cvtColor(imgTmp, out, CV_YCrCb2BGR);
     }
+    cv::merge(channels, imgy);
+    cvtColor(imgy, out, CV_YCrCb2BGR);
     return err;
 }
 
