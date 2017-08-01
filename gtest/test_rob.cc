@@ -34,5 +34,6 @@ TEST_F(RobTest, TestShow) {
     int d[4] = {2, 1, 1, 2};
     nums.clear();
     nums.assign(d, d+4);
-    ASSERT_EQ(max, 3);
+    max = m_rob.rob(nums);
+    ASSERT_EQ(max, 4);
 }
