@@ -15,7 +15,7 @@ namespace shiqi{
             p->insert(p->end(), data, data + length);
         }
 
-        Coder::Coder():m_casesensitive(1), m_eightbit(0), m_version(0), m_size(3), m_margin(2), m_dpi(72), m_micro(0), m_level(QR_ECLEVEL_L), m_hint(QR_MODE_8), m_type(PNG_TYPE){
+        Coder::Coder():m_casesensitive(1), m_eightbit(0), m_version(0), m_size(80), m_margin(2), m_dpi(72), m_micro(0), m_level(QR_ECLEVEL_M), m_hint(QR_MODE_8), m_type(PNG_TYPE){
         }
 
         Coder::~Coder(){
@@ -49,10 +49,12 @@ namespace shiqi{
 
             ImageType type = m_type;
             int margin = m_margin;
-            int size = m_size;
+            int size = 3;
             int dpi = m_dpi;
 
+            size = m_size/(qrcode->width + margin * 2);
             realwidth = (qrcode->width + margin * 2) * size;
+            printf("width: %d, margin: %d, realwidth: %d, size: %d\n", qrcode->width, margin, realwidth, size);
             if(type == PNG_TYPE) {
                 row = (unsigned char *)malloc((realwidth + 7) / 8);
             } else if(type == PNG32_TYPE) {

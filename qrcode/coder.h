@@ -30,6 +30,7 @@ namespace shiqi{
                 ~Coder();
 
                 int create(const unsigned char *intext, int length, std::vector<unsigned char> &out);
+                void setImgSize(int size);
 
             protected:
                 void fillRow(unsigned char *row, int num, const unsigned char color[]);
