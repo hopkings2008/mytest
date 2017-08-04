@@ -94,6 +94,38 @@ util::Error ImageAverage::save(const cv::Mat &img, const std::string &path, cons
     return err;
 }
 
+util::Error ImageAverage::averageGray(cv::Mat &out){
+    util::Error err;
+    cv::Mat gray;
+    cv::cvtColor(m_ori, gray, CV_RGB2GRAY);
+    cv::Mat grayout(gray.rows, gray.cols, CV_8UC1);
+    int minus = (m_range - 1)/2;
+    for (int i=0; i<gray.rows; i++){
+        for (int j=0; j<gray.cols; j++){
+            int k = 0;
+            int l = 0;
+            int total = 0;
+            double v = 0.0;
+            for (int m = 0; m<m_range; m++){
+                for (int n = 0; n<m_range; n++){
+                    k = i-minus + m;
+                    l = j-minus + n;
+                    if (k < 0 || l < 0 || k >= gray.rows || l >= gray.cols){
+                        continue;
+                    }
+                    v += gray.at<unsigned char>(k,l);
+                    total++;
+                }
+            }
+
+            grayout.at<unsigned char>(i,j) = (unsigned char)(v/total);
+        }
+    }
+
+    cv::cvtColor(grayout, out, CV_GRAY2RGB);
+    return err;
+}
+
 util::Error ImageAverage::average(cv::Mat &out){
     util::Error err;
     //cv::medianBlur(m_ori, out, 3);
@@ -105,6 +137,10 @@ util::Error ImageAverage::average(cv::Mat &out){
     cv::Mat imgy;
     cv::cvtColor(m_ori, imgy, CV_BGR2YCrCb);
     cv::split(imgy,channels);
+    cv::medianBlur(channels[0], channels[0], 3);
+    cv::merge(channels, imgy);
+    cvtColor(imgy, out, CV_YCrCb2BGR);
+    return err;
     //cv::Mat &imgTmp = channels[0];
     cv::Mat imgTmp(m_ori.rows, m_ori.cols, CV_8UC3);
     int chans = chanNum();
@@ -155,7 +191,9 @@ util::Error ImageAverage::average(cv::Mat &out){
             }
             //imgTmp.at<cv::Vec3b>(i,j)[0] = channels[0].at<cv::Vec3b>(i,j)[0]-1;
             imgTmp.at<cv::Vec3b>(i,j)[0] = static_cast<unsigned char>(round((double)v[0]/(double)total));
-            imgTmp.at<cv::Vec3b>(i,j)[1] = channels[0].at<cv::Vec3b>(i,j)[1];
+            imgTmp.at<cv::Vec3b>(i,j)[1] = static_cast<unsigned char>(round((double)v[1]/(double)total));
+            imgTmp.at<cv::Vec3b>(i,j)[2] = static_cast<unsigned char>(round((double)v[2]/(double)total));
+            //imgTmp.at<cv::Vec3b>(i,j)[1] = channels[0].at<cv::Vec3b>(i,j)[1];
             imgTmp.at<cv::Vec3b>(i,j)[2] = channels[0].at<cv::Vec3b>(i,j)[2];
             //out.at<cv::Vec3b>(i,j)[1] = imgTmp.at<cv::Vec3b>(i,j)[1];
             //out.at<cv::Vec3b>(i,j)[2] = imgTmp.at<cv::Vec3b>(i,j)[2];
