@@ -13,6 +13,8 @@ class ImageAverage{
 
         util::Error average(cv::Mat &out);
 
+		util::Error average2(cv::Mat &out);
+
         util::Error averageGray(cv::Mat &out);
 
         util::Error inverse(cv::Mat &out);

@@ -23,7 +23,7 @@ TEST_F(AverTest, TestBasicAverageFunc) {
     ASSERT_EQ(err.code(), 0);
     printf("depth: %d\n", m_aver.depth());
     cv::Mat out(m_aver.rowNum(), m_aver.colNum(), CV_8UC3);
-    err = m_aver.average(out);
+    err = m_aver.average2(out);
     ASSERT_EQ(err.code(), 0);
     err = m_aver.save(out, "./imgs", "out");
     ASSERT_EQ(err.code(), 0);
