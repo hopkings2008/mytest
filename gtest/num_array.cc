@@ -1,15 +1,14 @@
 #include <num_array.h>
+#include <stdio.h>
 
 NumArray::NumArray(const std::vector<int> &nums){
     m_size = (int)nums.size();
     for (int i=0; i<m_size; i++){
-        std::vector<int> v(m_size-i, 0);
-        m_nums.push_back(v);
-    }
-    for (int i=0; i<m_size; i++){
-        for (int j=i; j<m_size; j++){
-            m_nums[i][j] = m_nums[i][j-1] + nums[j];
+        if (0 == i){
+            m_nums.push_back(nums[i]);
+            continue;
         }
+        m_nums.push_back(nums[i] + m_nums[i-1]);
     }
 }
 
@@ -20,7 +19,9 @@ int NumArray::sumRange(int i, int j){
     if (i >= m_size){
         return 0;
     }
-
-    return m_nums[i][j];
+    if (i > 0){
+        return m_nums[j] - m_nums[i-1];
+    }
+    return m_nums[j];
 }
 
