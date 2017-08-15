@@ -20,17 +20,17 @@ int UniquePath::pathNums(std::vector<std::vector<int>> &obstacleGrid){
     for (int i=0; i<m; i++){
         if (1 == obstacleGrid[i][0]){
             for (int k=i; k<m; k++){
-                nums[i][0] = -1;
+                nums[k][0] = -1;
             }
             break;
         }
         nums[i][0] = 1;
     }
 
-    for (int j=1; j<n; j++){
+    for (int j=0; j<n; j++){
         if (1 == obstacleGrid[0][j]){
             for (int k = j; k<n; k++){
-                nums[0][j] = -1;
+                nums[0][k] = -1;
             }
             break;
         }
@@ -38,7 +38,6 @@ int UniquePath::pathNums(std::vector<std::vector<int>> &obstacleGrid){
     }
 
     for (int i=1; i<m; i++){
-        int n = (int)obstacleGrid[i].size();
         for (int j=1; j<n; j++){
             if (1 == obstacleGrid[i][j]){
                 nums[i][j] = -1;
@@ -56,5 +55,5 @@ int UniquePath::pathNums(std::vector<std::vector<int>> &obstacleGrid){
         }
     }
 
-    return nums[m-1][n-1];
+    return nums[m-1][n-1] != -1 ? nums[m-1][n-1] : 0;
 }
