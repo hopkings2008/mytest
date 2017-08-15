@@ -9,6 +9,6 @@ class NumArray{
         int sumRange(int i, int j);
 
     protected:
-        std::vector<std::vector<int>> m_nums;
+        std::vector<int> m_nums;
         int m_size;
 };
